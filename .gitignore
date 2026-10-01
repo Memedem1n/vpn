@@ -1,0 +1,5 @@
+# Kurulumda indirilen programlar ve kisisel WARP anahtarlari (asla paylasmayin)
+bin/
+data/
+tmp/
+.DS_Store
