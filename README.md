@@ -32,7 +32,7 @@ Terminal'i açın (Spotlight → "Terminal") ve şunu yapıştırın:
 
 ```bash
 mkdir -p ~/PortableVPN && cd ~/PortableVPN && \
-curl -L https://github.com/memedem1n/vpn/archive/HEAD.tar.gz | tar xz --strip-components=1 && \
+curl -L https://github.com/Memedem1n/vpn/archive/refs/heads/claude/determined-fermat-dsc8ie.tar.gz | tar xz --strip-components=1 && \
 bash vpn.command
 ```
 
