@@ -32,6 +32,15 @@ need_warp() {
   return 1
 }
 
+need_own() {
+  need_setup && return 0
+  if [ ! -f "$DATA/own-tun.json" ]; then
+    warn "Henuz sunucu eklenmedi. Once secenek 8 ile sunucu baglantinizi ekleyin."
+    return 0
+  fi
+  return 1
+}
+
 # --- Sistem proxy ayari (proxy modlari icin) ---------------------------------
 services() { networksetup -listallnetworkservices 2>/dev/null | sed 1d | grep -v '^\*'; }
 
@@ -102,7 +111,7 @@ run_proxy() {  # $1 = ayar dosyasi, $2 = aciklama
   ok "$2 baslatiliyor (sifre gerekmez)."
   echo "    Safari/Chrome gibi sistem proxy'sini kullanan uygulamalar bu baglantidan gecer."
   echo "    KAPATMAK icin bu pencerede Ctrl+C'ye basin. (Pencereyi direkt kapatirsaniz"
-  echo "    menudeki 'Acil durum' secenegiyle proxy ayarini sifirlayin.)"
+  echo "    menudeki 'Acil durum' (10) secenegiyle proxy ayarini sifirlayin.)"
   echo
   "$SB" run -c "$1" &
   SB_PID=$!
@@ -153,8 +162,13 @@ while true; do
   echo "  [4] WARP VPN - TAM mod     (sifre ister, her sey VPN'den gecer)"
   echo "  [5] WARP VPN - Proxy modu  (sifre istemez, tarayici)"
   echo
-  echo "  [6] WARP baglanmiyorsa: baska sunucu/port dene"
-  echo "  [7] Acil durum: her seyi kapat, proxy ayarlarini sifirla"
+  echo "  --- Kendi sunucum (Azerbaycan vb., dusuk ping, TR disi IP) ---"
+  echo "  [6] Kendi sunucum - TAM mod    (sifre ister, her sey)"
+  echo "  [7] Kendi sunucum - Proxy modu (sifre istemez, tarayici)"
+  echo "  [8] Kendi sunucumu ekle / degistir (vless:// baglantisi)"
+  echo
+  echo "  [9] WARP baglanmiyorsa: baska sunucu/port dene"
+  echo "  [10] Acil durum: her seyi kapat, proxy ayarlarini sifirla"
   echo "  [0] Cikis"
   echo
   read -r -p "Seciminiz: " choice
@@ -164,8 +178,11 @@ while true; do
     3) need_setup && { pause; continue; }; run_proxy "$CONF/dpi-proxy.json" "DPI Bypass (proxy modu)" ;;
     4) need_warp && { pause; continue; }; run_tun "$DATA/warp-tun.json" "WARP VPN (tam mod)" ;;
     5) need_warp && { pause; continue; }; run_proxy "$DATA/warp-proxy.json" "WARP VPN (proxy modu)" ;;
-    6) bash "$ROOT/scripts/build-config.sh" --next; echo "Simdi 4 veya 5 ile tekrar deneyin."; pause ;;
-    7) emergency_reset ;;
+    6) need_own && { pause; continue; }; run_tun "$DATA/own-tun.json" "Kendi sunucum (tam mod)" ;;
+    7) need_own && { pause; continue; }; run_proxy "$DATA/own-proxy.json" "Kendi sunucum (proxy modu)" ;;
+    8) bash "$ROOT/scripts/add-server.sh"; pause ;;
+    9) bash "$ROOT/scripts/build-config.sh" --next; echo "Simdi 4 veya 5 ile tekrar deneyin."; pause ;;
+    10) emergency_reset ;;
     0|q|Q) exit 0 ;;
   esac
 done

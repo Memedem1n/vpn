@@ -14,7 +14,8 @@ ve oradan çalışır. Klasörü silerseniz her şey gider.
 | Mod | Ne işe yarar | Hız |
 |---|---|---|
 | **DPI Bypass** | Discord ve DNS/SNI ile engellenen siteler. VPN değildir; trafiğiniz yine kendi internetinizden çıkar, sadece engel aşılır. | En hızlı |
-| **WARP VPN** | Gerçek VPN (Cloudflare WARP, ücretsiz). IP adresiniz değişir, tüm trafik şifreli tünelden geçer. İş için VPN gerektiğinde bunu kullanın. | Biraz daha yavaş |
+| **WARP VPN** | Gerçek VPN (Cloudflare WARP, ücretsiz). Trafik şifrelenir ama **konum yine Türkiye görünür** (en yakın Cloudflare noktası İstanbul). | Hızlı |
+| **Kendi sunucum** | Seçtiğiniz ülkedeki (ör. Azerbaycan) kendi sunucunuz. IP ve konum o ülke olur, düşük ping, DPI'a karşı gizlenmiş (VLESS + Reality). | Sunucuya bağlı |
 
 Her birinin iki çalışma şekli var:
 
@@ -57,16 +58,37 @@ bash ~/PortableVPN/vpn.command
   [3] DPI Bypass - Proxy modu  (sifre istemez, tarayici)
   [4] WARP VPN - TAM mod       (sifre ister, her sey VPN'den gecer)
   [5] WARP VPN - Proxy modu    (sifre istemez, tarayici)
-  [6] WARP baglanmiyorsa: baska sunucu/port dene
-  [7] Acil durum: her seyi kapat, proxy ayarlarini sifirla
+  [6] Kendi sunucum - TAM mod
+  [7] Kendi sunucum - Proxy modu
+  [8] Kendi sunucumu ekle / degistir (vless:// baglantisi)
+  [9] WARP baglanmiyorsa: baska sunucu/port dene
+  [10] Acil durum: her seyi kapat, proxy ayarlarini sifirla
 ```
 
 **Kapatmak için** bağlantının açık olduğu Terminal penceresinde **Ctrl+C**'ye basın.
 
+## Azerbaycan (TR dışı) sunucu kurmak
+
+Ücretsiz ve güvenilir bir Azerbaycan sunucusu yok; konumu seçmenin tek sağlam yolu küçük bir sunucu (VPS) kiralamak.
+En ucuz paket (1 çekirdek, 512 MB–1 GB RAM) yeterli.
+
+1. **Bakü (Azerbaycan)** konumlu bir VPS kiralayın, işletim sistemi olarak **Ubuntu** seçin.
+   Bakü'de bulamazsanız Tiflis (Gürcistan), Sofya (Bulgaristan) veya Bükreş (Romanya) da Türkiye'ye düşük pinglidir.
+2. Sağlayıcının verdiği IP ve root şifresiyle Mac Terminal'inden bağlanın:
+   ```bash
+   ssh root@SUNUCU_IP
+   ```
+3. Sunucuda tek komutla kurun:
+   ```bash
+   curl -fL https://github.com/Memedem1n/vpn/raw/refs/heads/claude/determined-fermat-dsc8ie/server/install.sh | bash
+   ```
+4. En sonda çıkan `vless://...` bağlantısını kopyalayın. Mac'te menüden **8**'i seçip yapıştırın (ping değeri de gösterilir).
+5. Sonra **6** (TAM mod) veya **7** (proxy modu) ile bağlanın.
+
 ## Sorun giderme
 
-- **WARP bağlanmıyor / sayfalar açılmıyor:** Menüden **6**'yı seçip tekrar deneyin. Farklı Cloudflare adresleri ve portları sırayla denenir.
-- **İnternet tamamen gitti:** Menüden **7** (Acil durum). Proxy ayarlarını sıfırlar ve açık kalan bağlantıyı kapatır.
+- **WARP bağlanmıyor / sayfalar açılmıyor:** Menüden **9**'u seçip tekrar deneyin. Farklı Cloudflare adresleri ve portları sırayla denenir.
+- **İnternet tamamen gitti:** Menüden **10** (Acil durum). Proxy ayarlarını sıfırlar ve açık kalan bağlantıyı kapatır.
 - **Discord uygulaması bu macOS sürümünde açılmıyor:** Discord yeni sürümleri eski macOS'u desteklemeyebilir.
   DPI Bypass – TAM mod açıkken tarayıcıda <https://discord.com/app> kullanın; sesli görüşme de çalışır.
 - **"WARP hesabı oluşturulamadı":** Başka bir cihazda [wgcf](https://github.com/ViRb3/wgcf) ile

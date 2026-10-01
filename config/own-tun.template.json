@@ -1,0 +1,82 @@
+{
+  "log": {
+    "level": "warn",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "type": "https",
+        "tag": "remote",
+        "server": "1.1.1.1",
+        "detour": "proxy"
+      },
+      {
+        "type": "https",
+        "tag": "bootstrap",
+        "server": "1.1.1.1"
+      }
+    ],
+    "final": "remote",
+    "strategy": "prefer_ipv4"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "address": [
+        "172.19.0.1/30",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "mtu": 1400,
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "mixed"
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "proxy",
+      "server": "__HOST__",
+      "server_port": __PORT__,
+      "uuid": "__UUID__",
+      "flow": "__FLOW__",
+      "tls": {
+        "enabled": true,
+        "server_name": "__SNI__",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "__FP__"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "__PBK__",
+          "short_id": "__SID__"
+        }
+      }
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "action": "sniff"
+      },
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      }
+    ],
+    "final": "proxy",
+    "auto_detect_interface": true,
+    "default_domain_resolver": "bootstrap"
+  }
+}
